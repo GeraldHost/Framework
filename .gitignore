@@ -1,0 +1,14 @@
+node_modules/
+pkg/
+package-lock.json
+dist/
+
+wasm/target/
+wasm/target
+**/*.rs.bk
+wasm/Cargo.lock
+wasm/bin/
+wasm/pkg/
+wasm/wasm-pack.log
+
+.DS_Store
