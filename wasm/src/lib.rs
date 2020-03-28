@@ -6,6 +6,4 @@ mod deck;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-pub fn main() {
-    
-}
+pub fn main() {}
