@@ -1,11 +1,13 @@
 extern crate wasm_bindgen;
-
 use wasm_bindgen::prelude::*;
+
+extern crate rand;
+use rand::Rng;
 
 use self::Rank::*;
 use self::Suit::*;
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize, Copy, Clone)]
 enum Rank {
   Ace,
   Two,
@@ -41,9 +43,28 @@ impl Rank {
       _ => Err("Rank not found"),
     }
   }
+
+  fn get_value(&self) -> Result<u32, &'static str> {
+    match self {
+      Ace => Ok(1),
+      Two => Ok(2),
+      Three => Ok(3),
+      Four => Ok(4),
+      Five => Ok(5),
+      Six => Ok(6),
+      Seven => Ok(7),
+      Eight => Ok(8),
+      Nine => Ok(9),
+      Ten => Ok(10),
+      Jack => Ok(10),
+      Queen => Ok(10),
+      King => Ok(10),
+      _ => Err("Rank not found"),
+    }
+  }
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize, Copy, Clone)]
 enum Suit {
   Spades,
   Hearts,
@@ -63,7 +84,7 @@ impl Suit {
   }
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize, Copy, Clone)]
 struct Card {
   rank: Rank,
   suit: Suit,
@@ -92,6 +113,16 @@ impl Card {
   }
 }
 
+fn knuth_shuffle<T>(v: &mut Vec<T>) {
+  let mut rng = rand::thread_rng();
+  let l = v.len();
+
+  for n in 0..l {
+    let i = rng.gen_range(0, l - n);
+    v.swap(i, l - n - 1);
+  }
+}
+
 #[wasm_bindgen]
 pub struct Deck {
   cards: Vec<Card>,
@@ -115,12 +146,62 @@ impl Deck {
     JsValue::from_serde(&self.dealt_cards).unwrap()
   }
 
-  pub fn deal(&mut self, count: usize) -> JsValue {
+  pub fn deal(&mut self, hand: &mut Hand, count: usize) -> JsValue {
     for _ in 0..count {
       if let Some(card) = self.cards.pop() {
         self.dealt_cards.push(card);
+        hand.push_card(card);
       }
     }
     self.get_dealt_cards()
+  }
+
+  pub fn shuffle(&mut self) {
+    knuth_shuffle(&mut self.cards);
+  }
+}
+
+#[wasm_bindgen]
+pub struct Hand {
+  cards: Vec<Card>,
+}
+
+#[wasm_bindgen]
+impl Hand {
+  pub fn new() -> Hand {
+    Hand { cards: vec![] }
+  }
+
+  pub fn get_cards(&self) -> JsValue {
+    JsValue::from_serde(&self.cards).unwrap()
+  }
+
+  fn push_card(&mut self, card: Card) {
+    self.cards.push(card);
+  }
+
+  pub fn get_value(&mut self) -> u32 {
+    let mut total: u32 = 0;
+    for card in &self.cards {
+      if let Ok(value) = card.rank.get_value() {
+        total = total + value;
+      }
+    }
+    total
+  }
+}
+
+#[wasm_bindgen]
+pub struct Game {}
+
+#[wasm_bindgen]
+impl Game {
+  pub fn is_bust(hand: &mut Hand) -> bool {
+    let hand_value = hand.get_value();
+    if (hand_value > 21) {
+      true
+    } else {
+      false
+    }
   }
 }
