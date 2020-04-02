@@ -1,7 +1,17 @@
 #[macro_use]
 extern crate serde_derive;
 
-mod deck;
+pub mod rank;
+
+pub mod suit;
+
+pub mod card;
+
+pub mod deck;
+
+pub mod hand;
+
+pub mod blackjack;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
