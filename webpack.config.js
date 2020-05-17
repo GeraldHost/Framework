@@ -1,14 +1,15 @@
 const path = require("path");
 const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
 const WebpackHtmlPlugin = require("html-webpack-plugin");
+
 const dist = path.resolve(__dirname, "dist");
-const crate = path.resolve(__dirname, "wasm");
+const crate = path.resolve(__dirname, "core");
 
 module.exports = {
   mode: "development",
   devtool: "source-map",
   entry: {
-    index: "./src/main.tsx",
+    index: "./main.ts",
   },
   output: {
     path: dist,
@@ -25,26 +26,19 @@ module.exports = {
           },
         ],
       },
-      {
-        enforce: "pre",
-        test: /\.js$/,
-        loader: "source-map-loader",
-      },
     ],
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx"],
-    alias: {
-      Wasm: path.join(crate, "pkg"),
-    },
   },
   plugins: [
     new WasmPackPlugin({
       crateDirectory: crate,
-      outDir: path.join(crate, "pkg"),
+      outDir: path.resolve(crate, "pkg"),
     }),
     new WebpackHtmlPlugin({
       template: path.resolve(__dirname, "template.html"),
     }),
   ],
 };
+
