@@ -11,8 +11,9 @@ impl View {
         Self { nodes: vec![] }
     }
 
-    pub fn pushNode(&mut self, node: Node) {
+    pub fn pushNode(&mut self, node: Node) -> usize {
         self.nodes.push(node);
+        self.nodes.len()
     }
 
     pub fn nodes(&self) -> &Vec<Node> {

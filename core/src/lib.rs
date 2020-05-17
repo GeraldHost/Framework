@@ -17,7 +17,7 @@ pub fn tree(view: &mut View) -> usize {
 }
 
 #[wasm_bindgen]
-pub fn createNode(view: &mut View, node_type: NodeType, children: Vec<usize>) {
+pub fn createNode(view: &mut View, node_type: NodeType, children: Vec<usize>) -> usize {
     let mut nodes: Vec<Node> = vec![];
     unsafe {
         for node_ptr in children {
@@ -25,7 +25,9 @@ pub fn createNode(view: &mut View, node_type: NodeType, children: Vec<usize>) {
             nodes.push(node);
         }
     }
-    //Node::new(view, node_type, children);
+    let node = Node::new(node_type, Some(nodes));
+    let nodeIndex = view.pushNode(node);
+    nodeIndex
 }
 
  

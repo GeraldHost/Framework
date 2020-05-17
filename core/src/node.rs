@@ -1,4 +1,3 @@
-use crate::view::View;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -8,9 +7,7 @@ pub enum NodeType {
     TextNode,
 }
 
-pub type NodeKey = u32;
-
-pub type NodeChildren = Option<Vec<NodeKey>>;
+pub type NodeChildren = Option<Vec<Node>>;
 
 #[wasm_bindgen]
 pub struct Node {
@@ -20,13 +17,12 @@ pub struct Node {
 }
 
 impl Node {
-    pub fn new(view: &mut View, node_type: NodeType, children: NodeChildren) {
-        let node = Self {
+    pub fn new(node_type: NodeType, children: NodeChildren) -> Self {
+        Self {
             key: 0, // figure out how to do keys?
             node_type: node_type,
             children: children
-        };
-        view.pushNode(node);
+        }
     }
 }
 
