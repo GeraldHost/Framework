@@ -1,25 +1,34 @@
-use crate::node::{Node, NodeType, NodeChildren};
 use wasm_bindgen::prelude::*;
+
+use crate::operations::{Operation};
+
 
 #[wasm_bindgen]
 pub struct View {
-    nodes: Vec<Node>,
+    stack: Vec<Operation>
 }
 
 impl View {
     pub fn new() -> Self {
-        Self { nodes: vec![] }
-    }
-
-    pub fn pushNode(&mut self, node: Node) -> usize {
-        self.nodes.push(node);
-        self.nodes.len()
-    }
-
-    pub fn nodes(&self) -> &Vec<Node> {
-        &self.nodes
+        Self { stack: vec![] }
     }
     
+    pub fn stack(&mut self) -> &Vec<Operation> {
+        &self.stack
+    }
+    
+    pub fn push(&mut self, operation: Operation) {
+        self.stack.push(operation);
+    }
+    
+    // stringify the stack so we can have a look it in JS
+    pub fn debug(&mut self) {}
+    
+    // we will need to render our stack. The view stack is a virtual stack
+    // we can interate through interpreating the intstructions to produce what
+    // the next dom stack will look like. This will be the "next stack" we can
+    // then compare this with the "current stack" and do diff to determine what
+    // effects are required to update the dom
     pub fn render() {}
 }
 

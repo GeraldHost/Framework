@@ -24,5 +24,12 @@ impl Node {
             children: children
         }
     }
+
+    pub fn push_child(&mut self, node: Node) {
+        match &mut self.children {
+            Some(children) => children.push(node),
+            None => self.children = Some(vec![node]),
+        }
+    }
 }
 
