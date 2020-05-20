@@ -1,10 +1,12 @@
 use crate::node::{Node};
 
+#[derive(Debug)]
 pub enum ElementType {
     Div,
     P,
 }
 
+#[derive(Debug)]
 pub enum Operation {
     Child,
     Element(ElementType),

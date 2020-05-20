@@ -1,9 +1,10 @@
+use std::fmt;
 use wasm_bindgen::prelude::*;
 
 use crate::operations::{Operation};
 
-
 #[wasm_bindgen]
+#[derive(Debug)]
 pub struct View {
     stack: Vec<Operation>
 }
@@ -21,9 +22,6 @@ impl View {
         self.stack.push(operation);
     }
     
-    // stringify the stack so we can have a look it in JS
-    pub fn debug(&mut self) {}
-    
     // we will need to render our stack. The view stack is a virtual stack
     // we can interate through interpreating the intstructions to produce what
     // the next dom stack will look like. This will be the "next stack" we can
@@ -31,4 +29,5 @@ impl View {
     // effects are required to update the dom
     pub fn render() {}
 }
+
 

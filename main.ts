@@ -1,15 +1,15 @@
 const start = (wasm: any) => {
   console.log(wasm);
 
-  const view = wasm.createView();
-  const createNode = (nodeType: any, children: any) => wasm.createNode(view, nodeType, children);
-  
-  const nodeIndex = createNode(wasm.NodeType.Div, [
-    createNode(wasm.NodeType.P, [])
-  ]);
-  
-  // should be nodeIndex 2
-  console.log('nodeIndex', nodeIndex);
+  const view = wasm.create_view();
+
+  wasm.element(view, 0);
+  wasm.element(view, 1);
+  wasm.text_node(view, "string");
+  wasm.child(view);
+  wasm.child(view);
+
+  console.log(wasm.debug_view(view));
 }
 
 import("./core/pkg").then(start)
