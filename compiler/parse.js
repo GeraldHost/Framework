@@ -13,16 +13,16 @@ const codeHeader = [
 
 const codeFooter = ["Ok(())", "}"];
 
-const rustNode = (nodeIndex, t) =>
-  `let n${nodeIndex()} = node("${t}")?;`;
-const rustText = (textIndex, v) =>
-  `let t${textIndex()} = text("${v}")?;`;
+const rustNode = (nodeIndex, type) =>
+  `let n${nodeIndex()} = node("${type}")?;`;
+const rustText = (textIndex, value) =>
+  `let t${textIndex()} = text("${value}")?;`;
 const rustStateText = (textIndex, stateIndex) =>
   `let t${textIndex()} = text(s${stateIndex}.value)?;`;
 const rustAppend = (parent, child) =>
   `append(&n${parent}, &n${child})`;
 const rustAppendText = (parent, child) =>
-  `append(&n${parent}, &t${child})`;
+  `append_text(&n${parent}, &t${child})`;
 
 const codeBody = () => {
   let currentNodeIndex = 0;
@@ -111,6 +111,7 @@ const parseChildView = (
     currentTextIndex,
     currentNodeIndex,
   } = codeBodyInstance;
+
   return children.reduce((body, node) => {
     if (node.type === "JSXText") {
       if (node.value.trim() === "") {
