@@ -60,6 +60,7 @@ const codeBody = () => {
     state,
   };
 };
+
 /**
  * NodeInstance
  * Create an instance of a node which returns an object of only the
@@ -92,6 +93,7 @@ const nodeInstance = x => {
     x.type === "LabeledStatement" && x.label.name === "V";
 
   return {
+    ...x,
     isVariableDeclaration,
     isState,
     state,
@@ -201,11 +203,11 @@ const parse = ast => {
     } else if (node.isJsxView) {
       return [
         ...body,
-        ...parseView(n.body.expression, codeBodyInstance),
+        ...parseView(node.body.expression, codeBodyInstance),
       ];
     }
 
-    return a;
+    return body;
   }, codeHeader);
 };
 
