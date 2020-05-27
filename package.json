@@ -1,25 +1,27 @@
 {
   "name": "framework",
   "version": "1.0.0",
-  "description": "",
-  "main": "main.js",
-  "dependencies": {
-    "typescript": "^3.9.2"
+  "description": "framework",
+  "bin": {
+    "framework": "./dist/index.js"
   },
-  "devDependencies": {},
+  "main": "index.js",
   "scripts": {
-    "compile": "./compiler/parse.js > ./output/src/lib.rs",
-    "build": "yarn --cwd output webpack",
-    "dev": "serve dist"
+    "framework": "framework",
+    "build": "rollup -c rollup.config.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GeraldHost/Framework.git"
   },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/GeraldHost/Framework/issues"
+  "dependencies": {
+    "acorn": "^7.2.0",
+    "acorn-jsx": "^5.2.0",
+    "yargs": "^15.3.1"
   },
-  "homepage": "https://github.com/GeraldHost/Framework#readme"
+  "devDependencies": {
+    "rollup": "^2.11.0",
+    "rollup-plugin-executable": "^1.6.0"
+  },
+  "license": "ISC"
 }
