@@ -8,8 +8,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "compile": "./compiler.js > ./output/src/lib.rs",
+    "compile": "./compiler/parse.js > ./output/src/lib.rs",
     "build": "yarn --cwd output webpack",
     "dev": "serve dist"
   },
