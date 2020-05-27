@@ -113,6 +113,10 @@ const parseChildView = (
   } = codeBodyInstance;
   return children.reduce((body, node) => {
     if (node.type === "JSXText") {
+      if (node.value.trim() === "") {
+        return body;
+      }
+
       const rustTextInstance = rustText(textIndex, node.value);
       const appendInstance = rustAppendText(
         parentNodeIndex,
@@ -137,7 +141,7 @@ const parseChildView = (
       );
       const childBody = parseChildView(
         node.children,
-        nestedNodeIndex, // what is this parent Node?
+        nestedNodeIndex,
         codeBodyInstance
       );
       return [...body, nodeInstance, appendInstance, ...childBody];
@@ -164,9 +168,11 @@ const parseView = (node, codeBodyInstance) => {
   const body = [rustNode(nodeIndex, rootNodeType)];
 
   const parentNodeIndex = currentNodeIndex();
-  const childrenBody = node.children.length
-    ? parseChildView(node.children, parentNodeIndex, codeBodyInstance)
-    : [];
+  const childrenBody = parseChildView(
+    node.children,
+    parentNodeIndex,
+    codeBodyInstance
+  );
 
   return [...body, ...childrenBody];
 };
@@ -176,7 +182,8 @@ const parseView = (node, codeBodyInstance) => {
  * Walks the AST and parses each node returning a rust code body
  */
 const parse = ast => {
-  const { state, ...codeBodyInstance } = codeBody();
+  const codeBodyInstance = codeBody();
+  const { state } = codeBodyInstance;
 
   return ast.reduce((body, n) => {
     const node = nodeInstance(n);
@@ -193,10 +200,7 @@ const parse = ast => {
     } else if (node.isJsxView) {
       return [
         ...body,
-        ...parseView(n.body.expression, {
-          state,
-          ...codeBodyInstance,
-        }),
+        ...parseView(n.body.expression, codeBodyInstance),
       ];
     }
 
