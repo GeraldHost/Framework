@@ -1,9 +1,9 @@
 import path from "path";
 
+export const rustOutputDir = path.resolve(__dirname, "..", "output");
+
 export const rustLibOutputFile = path.resolve(
-  __dirname,
-  "..",
-  "output",
+  rustOutputDir,
   "src",
   "lib.rs"
 );
