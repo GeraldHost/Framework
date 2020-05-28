@@ -3,13 +3,13 @@ import { codeHeader } from "./constants";
 const rustNode = (nodeIndex, type) =>
   `let n${nodeIndex()} = node("${type}")?;`;
 const rustText = (textIndex, value) =>
-  `let t${textIndex()} = text("${value}")?;`;
+  `let t${textIndex()} = text("${value}");`;
 const rustStateText = (textIndex, stateIndex) =>
-  `let t${textIndex()} = text(s${stateIndex}.value)?;`;
+  `let t${textIndex()} = text(s${stateIndex}.value());`;
 const rustAppend = (parent, child) =>
-  `append(&n${parent}, &n${child})`;
+  `append(&n${parent}, &n${child});`;
 const rustAppendText = (parent, child) =>
-  `append_text(&n${parent}, &t${child})`;
+  `append_text(&n${parent}, &t${child});`;
 
 const codeBody = () => {
   let currentNodeIndex = 0;
