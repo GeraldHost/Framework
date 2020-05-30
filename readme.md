@@ -4,6 +4,10 @@ This is a working idea to take code written in Javascript and convert it into so
 
 Next task is to parse assigment operators on those state variables to call set on the state object in rust. This would obviously be a lot easier if WebAssembly supported reference types but for now we will look at passing the javascript function into rust to call it and converting the `$state = 1` varibale to something that resembals `state.set(1)` in rust.
 
+## TODO?
+
+- use acorn-walk `https://github.com/acornjs/acorn/tree/master/acorn-walk`
+
 # peer dependancies
 
 - wasm-pack
