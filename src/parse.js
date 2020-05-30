@@ -1,4 +1,5 @@
 import { codeHeader } from "./constants";
+import { codeBodyInstance } from "./codeBody";
 
 const rustNode = (nodeIndex, type) =>
   `let n${nodeIndex()} = node("${type}")?;`;
@@ -19,43 +20,6 @@ const rustState = (index, value) => {
     throw "state can only be a string or number";
   }
   return `let mut s${index} = State::new(${value});`;
-};
-
-const codeBody = () => {
-  let currentNodeIndex = 0;
-  let currentTextIndex = 0;
-  let currentState = [];
-
-  const getCurrentState = () => currentState;
-  const getCurrentNodeIndex = () => currentNodeIndex - 1;
-  const getCurrentTextIndex = () => currentTextIndex - 1;
-
-  const nodeIndex = () => {
-    const index = currentNodeIndex;
-    currentNodeIndex++;
-    return index;
-  };
-
-  const textIndex = () => {
-    const index = currentTextIndex;
-    currentTextIndex++;
-    return index;
-  };
-
-  const state = (name, value) => {
-    currentState.push(name);
-    const index = currentState.length - 1;
-    return { index, name, value };
-  };
-
-  return {
-    currentState: getCurrentState,
-    currentNodeIndex: getCurrentNodeIndex,
-    currentTextIndex: getCurrentTextIndex,
-    nodeIndex,
-    textIndex,
-    state,
-  };
 };
 
 /**
@@ -98,11 +62,7 @@ const nodeInstance = (x) => {
   };
 };
 
-const parseChildView = (
-  children,
-  parentNodeIndex,
-  codeBodyInstance
-) => {
+const parseChildView = (children, parentNodeIndex) => {
   const {
     nodeIndex,
     textIndex,
@@ -156,7 +116,7 @@ const parseChildView = (
  * Walks each expressions and converts JSX elements into
  * rust code and returns the body
  */
-const parseView = (node, codeBodyInstance) => {
+const parseView = (node) => {
   const { nodeIndex, currentNodeIndex } = codeBodyInstance;
 
   if (node.type !== "JSXElement") {
@@ -182,7 +142,6 @@ const parseView = (node, codeBodyInstance) => {
  * Walks the AST and parses each node returning a rust code body
  */
 const parse = (ast) => {
-  const codeBodyInstance = codeBody();
   const { state } = codeBodyInstance;
 
   return ast.reduce((body, n) => {
