@@ -1,4 +1,5 @@
 const codeBody = () => {
+  let _body = [];
   let _nodeIndex = 0;
   let _textIndex = 0;
   let _state = [];
@@ -7,7 +8,8 @@ const codeBody = () => {
   const getState = () => _state;
   const getNodeIndex = () => _nodeIndex - 1;
   const getTextIndex = () => _textIndex - 1;
-  const getImports = () => imports;
+  const getImports = () => _imports;
+  const getBody = () => _body;
 
   const nodeIndex = () => {
     const index = _nodeIndex;
@@ -31,17 +33,27 @@ const codeBody = () => {
     _imports.push(value);
   };
 
+  const body = (code) => {
+    _body.push(code);
+  };
+
+  // TODO: maybe rename these functions things like nodeIndex return a
+  // nodeIndex but they also set the next node index. the getters should
+  // technically just be imports() rather than getImports(). So maybe the
+  // nodeIndex should instead be nextNodeIndex() and the getter nodeIndex()
   return {
     /* getters */
     getImports,
     getState,
     getNodeIndex,
     getTextIndex,
+    getBody,
     /* setters */
     nodeIndex,
     textIndex,
     state,
     imports,
+    body,
   };
 };
 
