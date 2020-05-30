@@ -9,10 +9,22 @@ export const rustLibOutputFile = path.resolve(
 );
 
 export const codeHeader = [
-  "use core::{State, render, node, text, append, append_text};",
+  "use core::{NodeType, render, node, text, append, append_text, listener};",
+  "use core::state::{State};",
+  "use wasm_bindgen::JsCast;",
   "use wasm_bindgen::prelude::*;",
   "#[wasm_bindgen(start)]",
   "pub fn run() -> Result<(), JsValue> {",
 ];
 
-export const codeFooter = ["render(n0);", "Ok(())", "}"];
+// TODO: remove manual implementation of listener
+export const codeFooter = [
+  "s1.bind(NodeType::TextNode(t3));",
+  "let callback = move |event: web_sys::Event| {",
+  "s1.set(s1.value() + 1);",
+  "};",
+  'listener(&n2, "click", callback);',
+  "render(n0);",
+  "Ok(())",
+  "}",
+];
