@@ -1,5 +1,5 @@
+import { instance } from "./instance";
 import { codeHeader } from "./constants";
-import { codeBodyInstance } from "./codeBody";
 
 const rustNode = (nodeIndex, type) =>
   `let n${nodeIndex()} = node("${type}")?;`;
@@ -66,10 +66,10 @@ const parseChildView = (children, parentNodeIndex) => {
   const {
     nodeIndex,
     textIndex,
-    currentState,
-    currentTextIndex,
-    currentNodeIndex,
-  } = codeBodyInstance;
+    getState,
+    getTextIndex,
+    getNodeIndex,
+  } = instance;
 
   return children.reduce((body, node) => {
     if (node.type === "JSXText") {
@@ -80,21 +80,21 @@ const parseChildView = (children, parentNodeIndex) => {
       const rustTextInstance = rustText(textIndex, node.value);
       const appendInstance = rustAppendText(
         parentNodeIndex,
-        currentTextIndex()
+        getTextIndex()
       );
       return [...body, rustTextInstance, appendInstance];
     } else if (node.type === "JSXExpressionContainer") {
-      const stateIndex = currentState().indexOf(node.expression.name);
+      const stateIndex = getState().indexOf(node.expression.name);
       const stateTextInstance = rustStateText(textIndex, stateIndex);
       const appendInstance = rustAppendText(
         parentNodeIndex,
-        currentTextIndex()
+        getTextIndex()
       );
       return [...body, stateTextInstance, appendInstance];
     } else if (node.type === "JSXElement") {
       const nodeType = node.openingElement.name.name;
       const nodeInstance = rustNode(nodeIndex, nodeType);
-      const nestedNodeIndex = currentNodeIndex();
+      const nestedNodeIndex = getNodeIndex();
       const appendInstance = rustAppend(
         parentNodeIndex,
         nestedNodeIndex
@@ -102,7 +102,7 @@ const parseChildView = (children, parentNodeIndex) => {
       const childBody = parseChildView(
         node.children,
         nestedNodeIndex,
-        codeBodyInstance
+        instance
       );
       return [...body, nodeInstance, appendInstance, ...childBody];
     }
@@ -117,7 +117,7 @@ const parseChildView = (children, parentNodeIndex) => {
  * rust code and returns the body
  */
 const parseView = (node) => {
-  const { nodeIndex, currentNodeIndex } = codeBodyInstance;
+  const { nodeIndex, getNodeIndex } = instance;
 
   if (node.type !== "JSXElement") {
     throw '"V:" Labelled view must only contain JSX elements';
@@ -127,11 +127,11 @@ const parseView = (node) => {
   const rootNodeType = node.openingElement.name.name;
   const body = [rustNode(nodeIndex, rootNodeType)];
 
-  const parentNodeIndex = currentNodeIndex();
+  const parentNodeIndex = getNodeIndex();
   const childrenBody = parseChildView(
     node.children,
     parentNodeIndex,
-    codeBodyInstance
+    instance
   );
 
   return [...body, ...childrenBody];
@@ -142,7 +142,7 @@ const parseView = (node) => {
  * Walks the AST and parses each node returning a rust code body
  */
 const parse = (ast) => {
-  const { state } = codeBodyInstance;
+  const { state } = instance;
 
   return ast.reduce((body, n) => {
     const node = nodeInstance(n);
@@ -155,10 +155,7 @@ const parse = (ast) => {
       console.log("TYPE OF", typeof node.state.value);
       return [...body, rustState(index, value)];
     } else if (node.isJsxView) {
-      return [
-        ...body,
-        ...parseView(node.body.expression, codeBodyInstance),
-      ];
+      return [...body, ...parseView(node.body.expression, instance)];
     }
 
     return body;
