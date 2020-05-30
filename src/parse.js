@@ -5,11 +5,21 @@ const rustNode = (nodeIndex, type) =>
 const rustText = (textIndex, value) =>
   `let t${textIndex()} = text("${value}");`;
 const rustStateText = (textIndex, stateIndex) =>
-  `let t${textIndex()} = text(s${stateIndex}.value());`;
+  `let t${textIndex()} = text(&s${stateIndex}.value().to_string());`;
 const rustAppend = (parent, child) =>
   `append(&n${parent}, &n${child});`;
 const rustAppendText = (parent, child) =>
   `append_text(&n${parent}, &t${child});`;
+const rustState = (index, value) => {
+  if (typeof value === "number") {
+    value = value;
+  } else if (typeof value === "string") {
+    value = `"${value}".to_string()`;
+  } else {
+    throw "state can only be a string or number";
+  }
+  return `let mut s${index} = State::new(${value});`;
+};
 
 const codeBody = () => {
   let currentNodeIndex = 0;
@@ -183,10 +193,8 @@ const parse = (ast) => {
         node.state.name,
         node.state.value
       );
-      return [
-        ...body,
-        `let s${index} = State::new("${value}".to_string());`,
-      ];
+      console.log("TYPE OF", typeof node.state.value);
+      return [...body, rustState(index, value)];
     } else if (node.isJsxView) {
       return [
         ...body,

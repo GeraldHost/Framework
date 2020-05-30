@@ -48,7 +48,8 @@ const builder = ({ file, out, verbose }) => {
   fs.writeFileSync(rustLibOutputFile, codeBody);
 
   // TODO: abstract this to another file/function
-  const exec = spawn("wasm-pack", ["build", "--out-dir", out], {
+  const outDir = path.resolve(process.cwd(), out);
+  const exec = spawn("wasm-pack", ["build", "--out-dir", outDir], {
     cwd: rustOutputDir,
   });
 
