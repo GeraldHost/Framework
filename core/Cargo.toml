@@ -19,6 +19,7 @@ features = [
   'Node',
   'Window',
   'Text',
+  'Event'
 ]
 
 [profile.release]
