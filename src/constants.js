@@ -19,11 +19,11 @@ export const codeHeader = [
 
 // TODO: remove manual implementation of listener
 export const codeFooter = [
-  "s1.bind(NodeType::TextNode(t3));",
+  "s1.bind(NodeType::TextNode(t2));",
   "let callback = move |event: web_sys::Event| {",
   "s1.set(s1.value() + 1);",
   "};",
-  'listener(&n2, "click", callback);',
+  'listener(&n1, "click", callback);',
   "render(n0);",
   "Ok(())",
   "}",

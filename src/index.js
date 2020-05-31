@@ -7,11 +7,13 @@ import { spawn } from "child_process";
 import { sync as commandExistsSync } from "command-exists";
 
 import {
+  codeHeader,
   codeFooter,
   rustLibOutputFile,
   rustOutputDir,
 } from "./constants";
-import parse from "./parse";
+import { walk } from "./walk";
+import { instance } from "./instance";
 
 const command = (y) => {
   y.positional("file", {
@@ -39,11 +41,15 @@ const builder = ({ file, out, verbose }) => {
 
   const input = path.resolve(file);
   const programme = fs.readFileSync(input);
-
   const ast = acorn.Parser.extend(jsx()).parse(programme);
-  const resp = parse(ast.body);
 
-  const codeBody = [...resp, ...codeFooter].join("\n");
+  walk(ast);
+
+  const codeBody = [
+    ...codeHeader,
+    ...instance.body(),
+    ...codeFooter,
+  ].join("\n");
 
   fs.writeFileSync(rustLibOutputFile, codeBody);
 
@@ -56,11 +62,9 @@ const builder = ({ file, out, verbose }) => {
   exec.stdout.on("data", (data) => {
     if (verbose) console.log(`stdout: ${data}`);
   });
-
   exec.stderr.on("data", (data) => {
     if (verbose) console.error(`ps stderr: ${data}`);
   });
-
   exec.on("error", (err) => {
     if (verbose) console.error(err);
   });
