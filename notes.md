@@ -26,3 +26,20 @@ fn run() {
   listener(&n0, "click", increment);
 }
 ```
+
+```
+// returns array of state ast
+const searchForState = (ast) => {}
+// returns state code
+const compileState = (arrayAst) => {}
+
+// returns jsx ast
+const searchForView = (ast) => {}
+// returns compiled rust code
+const compileView = (jsxast) => {}
+
+// returns array of function ast
+const searchForFunctions = (ast) => {}
+// returns string of compiled code
+const compileFunctions = (arrayFuncAst) => {}
+```

@@ -12,8 +12,8 @@ import {
   rustLibOutputFile,
   rustOutputDir,
 } from "./constants";
-import { walk } from "./walk";
-import { instance } from "./instance";
+import { searchForState, compileState } from "./compiler/state";
+import { searchForView, compileView } from "./compiler/view";
 
 const command = (y) => {
   y.positional("file", {
@@ -40,34 +40,48 @@ const builder = ({ file, out, verbose }) => {
   }
 
   const input = path.resolve(file);
-  const programme = fs.readFileSync(input);
-  const ast = acorn.Parser.extend(jsx()).parse(programme);
+  const code = fs.readFileSync(input, "utf8");
 
-  walk(ast);
+  const ast = acorn.Parser.extend(jsx()).parse(code);
 
-  const codeBody = [
-    ...codeHeader,
-    ...instance.body(),
-    ...codeFooter,
-  ].join("\n");
+  const stateAstArray = searchForState(ast);
+  const { compiledState, stateMap } = compileState(stateAstArray);
+  console.log("compiledState", compiledState);
 
-  fs.writeFileSync(rustLibOutputFile, codeBody);
+  const viewNode = searchForView(ast);
+  const { compiledView, nodeMap, textMap } = compileView(
+    viewNode,
+    stateMap
+  );
+  console.log("compiledView", compiledView);
 
-  // TODO: abstract this to another file/function
-  const outDir = path.resolve(process.cwd(), out);
-  const exec = spawn("wasm-pack", ["build", "--out-dir", outDir], {
-    cwd: rustOutputDir,
-  });
+  // TODO: compile functions
 
-  exec.stdout.on("data", (data) => {
-    if (verbose) console.log(`stdout: ${data}`);
-  });
-  exec.stderr.on("data", (data) => {
-    if (verbose) console.error(`ps stderr: ${data}`);
-  });
-  exec.on("error", (err) => {
-    if (verbose) console.error(err);
-  });
+  // const codeBody = [
+  //   ...codeHeader,
+  //   ...instance.body(),
+  //   ...codeFooter,
+  // ].join("\n");
+
+  // return;
+
+  // fs.writeFileSync(rustLibOutputFile, codeBody);
+
+  // // TODO: abstract this to another file/function
+  // const outDir = path.resolve(process.cwd(), out);
+  // const exec = spawn("wasm-pack", ["build", "--out-dir", outDir], {
+  //   cwd: rustOutputDir,
+  // });
+
+  // exec.stdout.on("data", (data) => {
+  //   if (verbose) console.log(`stdout: ${data}`);
+  // });
+  // exec.stderr.on("data", (data) => {
+  //   if (verbose) console.error(`ps stderr: ${data}`);
+  // });
+  // exec.on("error", (err) => {
+  //   if (verbose) console.error(err);
+  // });
 };
 
 yargs.command("$0 <file>", "framework [file]", command, builder).argv;
