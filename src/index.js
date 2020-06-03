@@ -3,6 +3,7 @@ import path from "path";
 import yargs from "yargs";
 import acorn from "acorn";
 import jsx from "acorn-jsx";
+import recast from "recast";
 import { spawn } from "child_process";
 import { sync as commandExistsSync } from "command-exists";
 
@@ -12,8 +13,13 @@ import {
   rustLibOutputFile,
   rustOutputDir,
 } from "./constants";
+// TODO: make compiler index file
 import { searchForState, compileState } from "./compiler/state";
 import { searchForView, compileView } from "./compiler/view";
+import {
+  searchForFunctions,
+  compileFunctions,
+} from "./compiler/functions";
 
 const command = (y) => {
   y.positional("file", {
@@ -44,18 +50,24 @@ const builder = ({ file, out, verbose }) => {
 
   const ast = acorn.Parser.extend(jsx()).parse(code);
 
-  const stateAstArray = searchForState(ast);
-  const { compiledState, stateMap } = compileState(stateAstArray);
-  console.log("compiledState", compiledState);
+  const stateNodes = searchForState(ast);
+  const { compiledState, stateMap } = compileState(stateNodes);
 
   const viewNode = searchForView(ast);
   const { compiledView, nodeMap, textMap } = compileView(
     viewNode,
     stateMap
   );
-  console.log("compiledView", compiledView);
 
-  // TODO: compile functions
+  // TODO: can we just use the recast ast in place of acorn?
+  const codeWithoutView = code.substring(0, code.indexOf("V:"));
+  const recastAst = recast.parse(codeWithoutView, {
+    parser: acorn,
+  });
+  const functionNodes = searchForFunctions(recastAst.program);
+  const functions = compileFunctions(functionNodes);
+
+  console.log("Functions", functions);
 
   // const codeBody = [
   //   ...codeHeader,
