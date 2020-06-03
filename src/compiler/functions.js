@@ -57,8 +57,6 @@ const parser = (instance) => ({
 
     // TODO: this is very ugly
     if (lhs.name[0] === "$") {
-      // is state assignment
-      // lift the rhs to a variable decleration
       const rhsIdentifier = builders.identifier("rhs");
       const rhsDeclartion = builders.variableDeclaration("const", [
         builders.variableDeclarator(
@@ -66,7 +64,7 @@ const parser = (instance) => ({
           builders.literal(rhs.value)
         ),
       ]);
-      // create callee state.set passing in the new rhs var
+
       const stateIdentifier = builders.identifier("state");
       const callee = builders.callExpression(
         builders.memberExpression(
@@ -75,8 +73,7 @@ const parser = (instance) => ({
         ),
         [rhsIdentifier]
       );
-      // remove this current expression from ast tree
-      // add new expression to ast tree
+
       instance.addVariableDecleration(rhsDeclartion);
       instance.addArgument(stateIdentifier);
 
@@ -103,7 +100,6 @@ const compiler = (parser) => (node) => {
 };
 
 const compile = (nodes, parser) => {
-  // TODO: use a map for this
   const functions = new Set();
   nodes.forEach((node) => {
     const functionInstance = createFunctionInstance(node);
